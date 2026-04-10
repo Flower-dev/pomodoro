@@ -1,7 +1,5 @@
 ---
 description: Write tests for frontend code.
-agent: 
-model: 
 ---
 This command generates tests for frontend code, following best practices and conventions. It uses Vitests with React Testing Library, placing test files in a __tests__ directory alongside the source files. Test files are named [filename].test.ts(x) and use @/ prefix for imports.
 
