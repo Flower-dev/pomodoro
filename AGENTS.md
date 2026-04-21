@@ -2,7 +2,7 @@
 
 ## Project
 
-Next.js 16 app with static export, deployed to GitHub Pages. Package name is `quequonmange` (food/meal planning app). `app/layout.tsx` and `app/page.tsx` are currently empty — project is early stage.
+Next.js 16 app with static export, deployed to GitHub Pages. Package name is `pomodoro` (food/meal planning app). `app/layout.tsx` and `app/page.tsx` are currently empty — project is early stage.
 
 ## Commands
 
@@ -20,7 +20,7 @@ No test runner is configured yet. When tests are added, use **Vitest + React Tes
 `next.config.ts` sets `output: "export"`. This means:
 - No Server Actions, API routes, Image Optimization, or ISR
 - Build output goes to `out/`
-- When `GITHUB_PAGES=true`, `basePath` is `/qu-quonmange` — account for this in internal links
+- When `GITHUB_PAGES=true`, `basePath` is `/pomodoro` — account for this in internal links
 
 ## Toolchain Quirks
 
