@@ -2,8 +2,9 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "motion/react"
-import { usePomodoro } from "@/hooks/usePomodoro"
-import { TimerDisplay } from "@/components/timer/TimerDisplay"
+import { usePomodoro, type TimerStatus } from "@/hooks/usePomodoro"
+import { type Phase } from "@/lib/constants"
+import { TimerDisplay, formatTime } from "@/components/timer/TimerDisplay"
 import { TimerControls } from "@/components/timer/TimerControls"
 import { ModeSelector } from "@/components/timer/ModeSelector"
 import { StatsDashboard } from "@/components/stats/StatsDashboard"
@@ -68,80 +69,110 @@ const PHASE_THEME = {
   },
 }
 
-type ThemeKey = keyof typeof PHASE_THEME
-type BlobTheme = {
-  blobDark: string
-  blobMid: string
-  blobLight: string
-}
+type ThemeKey  = keyof typeof PHASE_THEME
+type BlobTheme = { blobDark: string; blobMid: string; blobLight: string }
 
-// Decorative Memphis/Pop organic blob shapes
-function CardDecorations({ theme }: { theme: BlobTheme }) {
+// ── Full-screen blob background ───────────────────────────────────────────────
+function FullScreenDecorations({ theme }: { theme: BlobTheme }) {
   return (
     <div
-      className="absolute inset-0 pointer-events-none"
-      style={{ borderRadius: "2.5rem", overflow: "hidden" }}
+      className="fixed inset-0 pointer-events-none overflow-hidden"
+      style={{ zIndex: 0 }}
       aria-hidden="true"
     >
       <svg
-        width="100%"
-        height="100%"
-        viewBox="0 0 340 600"
+        width="100%" height="100%"
+        viewBox="0 0 1440 900"
         preserveAspectRatio="xMidYMid slice"
-        style={{ position: "absolute", inset: 0 }}
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
       >
-        {/* Large pill — top right, dark shade, rotated */}
-        <rect
-          x="262" y="-58"
-          width="82" height="196"
-          rx="41"
+        {/* ── Large pills ── */}
+        <rect x="1180" y="-120" width="160" height="380" rx="80"
           fill={theme.blobDark}
-          transform="rotate(22 303 40)"
-          style={{ animation: "blob-float-slow 14s ease-in-out infinite" }}
+          transform="rotate(25 1260 70)"
+          style={{ animation: "blob-float-slow 16s ease-in-out infinite" }}
         />
-
-        {/* Medium pill — bottom left, mid shade */}
-        <rect
-          x="-44" y="408"
-          width="72" height="162"
-          rx="36"
+        <rect x="-80" y="640" width="150" height="340" rx="75"
           fill={theme.blobMid}
-          transform="rotate(-18 -8 489)"
-          style={{ animation: "blob-float 11s ease-in-out infinite 2s" }}
+          transform="rotate(-20 -5 810)"
+          style={{ animation: "blob-float 13s ease-in-out infinite 1.5s" }}
         />
-
-        {/* 4-petal flower — bottom right, light shade */}
-        <g
-          transform="translate(280, 528)"
-          style={{ animation: "blob-float 9s ease-in-out infinite 0.5s" }}
-        >
-          <circle cx="0"   cy="-23" r="19" fill={theme.blobLight} />
-          <circle cx="23"  cy="0"   r="19" fill={theme.blobLight} />
-          <circle cx="0"   cy="23"  r="19" fill={theme.blobLight} />
-          <circle cx="-23" cy="0"   r="19" fill={theme.blobLight} />
-        </g>
-
-        {/* Small accent circle — top left */}
-        <circle
-          cx="46" cy="76" r="14"
+        <rect x="60" y="200" width="110" height="260" rx="55"
+          fill={theme.blobDark}
+          transform="rotate(12 115 330)"
+          opacity="0.7"
+          style={{ animation: "blob-float-slow 18s ease-in-out infinite 3s" }}
+        />
+        <rect x="1260" y="400" width="100" height="230" rx="50"
+          fill={theme.blobMid}
+          transform="rotate(-15 1310 515)"
+          opacity="0.75"
+          style={{ animation: "blob-float 12s ease-in-out infinite 2s" }}
+        />
+        <rect x="600" y="780" width="120" height="200" rx="60"
           fill={theme.blobLight}
-          opacity="0.55"
-          style={{ animation: "blob-float 7s ease-in-out infinite 1s" }}
+          transform="rotate(8 660 880)"
+          opacity="0.6"
+          style={{ animation: "blob-float 10s ease-in-out infinite 0.8s" }}
+        />
+        {/* Small pill — top center */}
+        <rect x="640" y="-30" width="80" height="180" rx="40"
+          fill={theme.blobMid}
+          transform="rotate(-8 680 60)"
+          opacity="0.5"
+          style={{ animation: "blob-float-slow 15s ease-in-out infinite 4s" }}
         />
 
-        {/* Tiny flower — mid-card right edge */}
-        <g transform="translate(328, 290)" opacity="0.45">
-          <circle cx="0"   cy="-12" r="10" fill={theme.blobMid} />
-          <circle cx="12"  cy="0"   r="10" fill={theme.blobMid} />
-          <circle cx="0"   cy="12"  r="10" fill={theme.blobMid} />
-          <circle cx="-12" cy="0"   r="10" fill={theme.blobMid} />
+        {/* ── 4-petal flowers ── */}
+        {/* Bottom-right flower — large */}
+        <g transform="translate(1340, 820)" style={{ animation: "blob-float 10s ease-in-out infinite 0.5s" }}>
+          <circle cx="0"   cy="-42" r="36" fill={theme.blobLight} />
+          <circle cx="42"  cy="0"   r="36" fill={theme.blobLight} />
+          <circle cx="0"   cy="42"  r="36" fill={theme.blobLight} />
+          <circle cx="-42" cy="0"   r="36" fill={theme.blobLight} />
         </g>
+        {/* Top-left flower — medium */}
+        <g transform="translate(120, 100)" opacity="0.75" style={{ animation: "blob-float 8s ease-in-out infinite 2.5s" }}>
+          <circle cx="0"   cy="-28" r="24" fill={theme.blobMid} />
+          <circle cx="28"  cy="0"   r="24" fill={theme.blobMid} />
+          <circle cx="0"   cy="28"  r="24" fill={theme.blobMid} />
+          <circle cx="-28" cy="0"   r="24" fill={theme.blobMid} />
+        </g>
+        {/* Mid-bottom flower */}
+        <g transform="translate(400, 820)" opacity="0.5" style={{ animation: "blob-float 11s ease-in-out infinite 1s" }}>
+          <circle cx="0"   cy="-20" r="17" fill={theme.blobDark} />
+          <circle cx="20"  cy="0"   r="17" fill={theme.blobDark} />
+          <circle cx="0"   cy="20"  r="17" fill={theme.blobDark} />
+          <circle cx="-20" cy="0"   r="17" fill={theme.blobDark} />
+        </g>
+        {/* Right-mid small flower */}
+        <g transform="translate(1380, 360)" opacity="0.45" style={{ animation: "blob-float 9s ease-in-out infinite 4s" }}>
+          <circle cx="0"   cy="-16" r="13" fill={theme.blobLight} />
+          <circle cx="16"  cy="0"   r="13" fill={theme.blobLight} />
+          <circle cx="0"   cy="16"  r="13" fill={theme.blobLight} />
+          <circle cx="-16" cy="0"   r="13" fill={theme.blobLight} />
+        </g>
+        {/* Top-center small flower */}
+        <g transform="translate(720, 60)" opacity="0.5" style={{ animation: "blob-float 7s ease-in-out infinite 1.2s" }}>
+          <circle cx="0"   cy="-14" r="12" fill={theme.blobLight} />
+          <circle cx="14"  cy="0"   r="12" fill={theme.blobLight} />
+          <circle cx="0"   cy="14"  r="12" fill={theme.blobLight} />
+          <circle cx="-14" cy="0"   r="12" fill={theme.blobLight} />
+        </g>
+
+        {/* ── Accent circles ── */}
+        <circle cx="200" cy="820" r="22" fill={theme.blobDark}  opacity="0.5"
+          style={{ animation: "blob-float 9s ease-in-out infinite 3.5s" }} />
+        <circle cx="1200" cy="160" r="18" fill={theme.blobMid} opacity="0.55"
+          style={{ animation: "blob-float-slow 14s ease-in-out infinite 0.7s" }} />
+        <circle cx="900" cy="780" r="16" fill={theme.blobDark} opacity="0.4"
+          style={{ animation: "blob-float 8s ease-in-out infinite 2.2s" }} />
       </svg>
     </div>
   )
 }
 
-// Phase icons — stroke white
+// ── Phase icon ────────────────────────────────────────────────────────────────
 function PhaseIcon({ phase, color }: { phase: string; color: string }) {
   if (phase === "focus") {
     return (
@@ -178,212 +209,342 @@ const PHASE_LABEL: Record<string, string> = {
   "long-break":  "Long Break",
 }
 
+// ── Shared cycle dots ─────────────────────────────────────────────────────────
+function CycleDots({ cyclesCompleted, status, phase, theme }: {
+  cyclesCompleted: number
+  status: TimerStatus
+  phase: Phase
+  theme: typeof PHASE_THEME[ThemeKey]
+}) {
+  return (
+    <div className="flex items-center gap-2" aria-label={`${cyclesCompleted} of 4 cycles completed`}>
+      {Array.from({ length: 4 }).map((_, i) => {
+        const filled  = i < cyclesCompleted
+        const partial = i === cyclesCompleted && status === "running" && phase === "focus"
+        return (
+          <motion.div
+            key={i}
+            className="rounded-full"
+            animate={{
+              background: filled
+                ? theme.dotFilled
+                : partial
+                  ? `conic-gradient(${theme.dotFilled} 50%, ${theme.dotEmpty} 0)`
+                  : theme.dotEmpty,
+              width:     filled ? 9 : 8,
+              height:    filled ? 9 : 8,
+              boxShadow: filled ? "0 0 8px rgba(255,255,255,0.6)" : "none",
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          />
+        )
+      })}
+    </div>
+  )
+}
+
+// ── Glass panel styles (shared) ───────────────────────────────────────────────
+const glassPanelStyle: React.CSSProperties = {
+  background:           "rgba(255,255,255,0.10)",
+  backdropFilter:       "blur(20px)",
+  WebkitBackdropFilter: "blur(20px)",
+  border:               "1.5px solid rgba(255,255,255,0.28)",
+  borderRadius:         "2.5rem",
+  overflow:             "hidden",
+  boxShadow:            "0 8px 40px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.2)",
+}
+
+// ── Timer panel content ───────────────────────────────────────────────────────
+function TimerPanel({
+  phase, status, remaining, cyclesCompleted,
+  theme, onShowStats, start, pause, reset, addTime, selectPhase,
+  hideStatsBtn,
+}: {
+  phase: Phase
+  status: TimerStatus
+  remaining: number
+  cyclesCompleted: number
+  theme: typeof PHASE_THEME[ThemeKey]
+  onShowStats?: () => void
+  start: () => void
+  pause: () => void
+  reset: () => void
+  addTime: (seconds: number) => void
+  selectPhase: (p: Phase) => void
+  hideStatsBtn?: boolean
+}) {
+  return (
+    <div className="flex flex-col flex-1 px-7 pt-7 pb-9 gap-5 relative" style={{ zIndex: 10 }}>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        {!hideStatsBtn ? (
+          <button
+            onClick={onShowStats}
+            className="flex items-center justify-center w-9 h-9 rounded-full transition-all hover:opacity-80 active:scale-95"
+            style={{
+              background:    "rgba(255,255,255,0.18)",
+              border:        "1.5px solid rgba(255,255,255,0.28)",
+              cursor:        "pointer",
+              backdropFilter:"blur(4px)",
+            }}
+            aria-label="View stats"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6"  y1="20" x2="6"  y2="14" />
+            </svg>
+          </button>
+        ) : (
+          <div style={{ width: 36 }} aria-hidden="true" />
+        )}
+
+        <CycleDots cyclesCompleted={cyclesCompleted} status={status} phase={phase} theme={theme} />
+
+        <div style={{ width: 36 }} aria-hidden="true" />
+      </div>
+
+      {/* Arc timer (icon only at center) */}
+      <div className="flex justify-center">
+        <TimerDisplay
+          remaining={remaining}
+          phase={phase}
+          isCompleted={status === "completed"}
+          theme={theme}
+        />
+      </div>
+
+      {/* Phase label */}
+      <motion.div
+        key={phase}
+        initial={{ opacity: 0, y: 5 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="flex flex-col items-center"
+      >
+        <div
+          className="flex items-center gap-2 px-4 py-2 rounded-full"
+          style={{
+            background:    "rgba(255,255,255,0.15)",
+            border:        "1.5px solid rgba(255,255,255,0.25)",
+            backdropFilter:"blur(4px)",
+          }}
+        >
+          <PhaseIcon phase={phase} color="rgba(255,255,255,0.9)" />
+          <span className="text-sm font-bold" style={{ color: "#ffffff", fontFamily: "var(--font-nunito)", letterSpacing: "0.02em" }}>
+            {PHASE_LABEL[phase]}
+          </span>
+        </div>
+      </motion.div>
+
+      {/* Mode selector */}
+      <ModeSelector
+        phase={phase}
+        status={status}
+        onSelect={selectPhase}
+        theme={theme}
+      />
+
+      {/* Time digits — between mode selector and controls */}
+      <motion.div
+        className="flex justify-center"
+        animate={status === "completed" ? { scale: [1, 1.06, 0.97, 1] } : { scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <motion.span
+          key={`${phase}-${status === "completed"}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.25 }}
+          className="tabular-nums leading-none select-none"
+          style={{
+            fontFamily:    "var(--font-nunito), system-ui, sans-serif",
+            fontSize:      "clamp(3.0rem, 14vw, 4.0rem)",
+            fontWeight:    800,
+            color:         "#ffffff",
+            letterSpacing: "-0.01em",
+            textShadow:    "0 2px 20px rgba(0,0,0,0.15)",
+          }}
+          aria-live="off"
+        >
+          {formatTime(remaining)}
+        </motion.span>
+      </motion.div>
+
+      {/* Controls + +5 min */}
+      <div className="flex flex-col items-center gap-3 mt-auto">
+        <TimerControls
+          status={status}
+          phase={phase}
+          onStart={start}
+          onPause={pause}
+          onReset={reset}
+          theme={theme}
+        />
+
+        {/* +5 min — focus only, not completed */}
+        <AnimatePresence>
+          {phase === "focus" && status !== "completed" && (
+            <motion.button
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 6 }}
+              transition={{ duration: 0.2 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.93 }}
+              onClick={() => addTime(300)}
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-full font-bold select-none"
+              style={{
+                background:    "rgba(255,255,255,0.13)",
+                border:        "1.5px solid rgba(255,255,255,0.28)",
+                backdropFilter:"blur(4px)",
+                cursor:        "pointer",
+                color:         "rgba(255,255,255,0.85)",
+                fontFamily:    "var(--font-nunito)",
+                fontSize:      "0.72rem",
+                letterSpacing: "0.06em",
+              }}
+              aria-label="Add 5 minutes to focus session"
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              5 min
+            </motion.button>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  )
+}
+
+// ── Stats panel content ───────────────────────────────────────────────────────
+function StatsPanel({
+  theme, stats, clearSessions, onBack, hideBackBtn,
+}: {
+  theme: typeof PHASE_THEME[ThemeKey]
+  stats: ReturnType<typeof usePomodoro>["stats"]
+  clearSessions: () => void
+  onBack?: () => void
+  hideBackBtn?: boolean
+}) {
+  return (
+    <div
+      className="flex flex-col flex-1 px-7 pt-7 pb-9 gap-5 relative"
+      style={{ zIndex: 10, color: theme.cardText }}
+    >
+      <div className="flex items-center gap-3">
+        {!hideBackBtn ? (
+          <button
+            onClick={onBack}
+            className="flex items-center justify-center w-9 h-9 rounded-full transition-all hover:opacity-80 active:scale-95"
+            style={{
+              background: "rgba(255,255,255,0.18)",
+              border:     "1.5px solid rgba(255,255,255,0.28)",
+              cursor:     "pointer",
+            }}
+            aria-label="Back to timer"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+        ) : (
+          <div style={{ width: 36 }} aria-hidden="true" />
+        )}
+        <span
+          className="font-bold tracking-widest uppercase"
+          style={{ color: "#ffffff", fontFamily: "var(--font-nunito)", fontSize: "0.78rem", letterSpacing: "0.14em" }}
+        >
+          Statistics
+        </span>
+      </div>
+
+      <StatsDashboard
+        todayCount={stats.todayCount}
+        totalMinutes={stats.totalMinutes}
+        currentStreak={stats.currentStreak}
+        bestStreak={stats.bestStreak}
+        last7Days={stats.last7Days}
+        accentColor={theme.accent}
+        onClear={clearSessions}
+        theme={theme}
+      />
+    </div>
+  )
+}
+
+// ── Root ──────────────────────────────────────────────────────────────────────
 export default function PomodoroApp() {
   const [view, setView] = useState<View>("timer")
+
   const {
-    phase,
-    status,
-    remaining,
-    cyclesCompleted,
-    start,
-    pause,
-    reset,
-    selectPhase,
-    stats,
-    clearSessions,
+    phase, status, remaining, cyclesCompleted,
+    start, pause, reset, addTime, selectPhase, stats, clearSessions,
   } = usePomodoro()
 
   const theme = PHASE_THEME[phase as ThemeKey]
 
   return (
     <motion.main
-      className="min-h-screen min-h-dvh flex flex-col items-center justify-center px-5 py-8"
-      animate={{ backgroundColor: theme.pageBg }}
+      className="min-h-screen min-h-dvh flex flex-col items-center justify-center px-4 py-8 relative"
+      animate={{ backgroundColor: theme.cardBg }}
       transition={{ duration: 0.75, ease: "easeInOut" }}
-      style={{ backgroundColor: theme.pageBg }}
+      style={{ backgroundColor: theme.cardBg }}
     >
-      {/* Card */}
-      <motion.div
-        className="w-full max-w-[340px] flex flex-col relative"
-        animate={{ backgroundColor: theme.cardBg }}
-        transition={{ duration: 0.75, ease: "easeInOut" }}
-        style={{
-          borderRadius: "2.5rem",
-          overflow: "hidden",
-          minHeight: "600px",
-          boxShadow: "0 32px 80px rgba(0,0,0,0.22), 0 8px 24px rgba(0,0,0,0.14)",
-        }}
+      {/* Full-screen blob pattern — always visible */}
+      <FullScreenDecorations theme={theme} />
+
+      {/* ── Unique card — responsive width ──────────────────────────────────── */}
+      <div
+        className="w-full flex justify-center"
+        style={{ position: "relative", zIndex: 10 }}
       >
-        {/* Memphis blob decorations */}
-        <CardDecorations theme={theme} />
-
-        <AnimatePresence mode="wait">
-          {view === "timer" ? (
-            <motion.div
-              key="timer"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="flex flex-col flex-1 px-7 pt-7 pb-9 gap-5 relative"
-              style={{ zIndex: 10 }}
-            >
-              {/* Header: stats button + cycle dots */}
-              <div className="flex items-center justify-between">
-                <button
-                  onClick={() => setView("stats")}
-                  className="flex items-center justify-center w-9 h-9 rounded-full transition-all hover:opacity-80 active:scale-95"
-                  style={{
-                    background: "rgba(255,255,255,0.18)",
-                    border: "1.5px solid rgba(255,255,255,0.28)",
-                    cursor: "pointer",
-                    backdropFilter: "blur(4px)",
-                  }}
-                  aria-label="View stats"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <line x1="18" y1="20" x2="18" y2="10" />
-                    <line x1="12" y1="20" x2="12" y2="4" />
-                    <line x1="6"  y1="20" x2="6"  y2="14" />
-                  </svg>
-                </button>
-
-                {/* Cycle dots */}
-                <div className="flex items-center gap-2" aria-label={`${cyclesCompleted} of 4 cycles completed`}>
-                  {Array.from({ length: 4 }).map((_, i) => {
-                    const filled  = i < cyclesCompleted
-                    const partial = i === cyclesCompleted && status === "running" && phase === "focus"
-                    return (
-                      <motion.div
-                        key={i}
-                        className="rounded-full"
-                        animate={{
-                          background: filled
-                            ? theme.dotFilled
-                            : partial
-                              ? `conic-gradient(${theme.dotFilled} 50%, ${theme.dotEmpty} 0)`
-                              : theme.dotEmpty,
-                          width:  filled ? 9 : 8,
-                          height: filled ? 9 : 8,
-                          boxShadow: filled ? "0 0 8px rgba(255,255,255,0.6)" : "none",
-                        }}
-                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                      />
-                    )
-                  })}
-                </div>
-
-                <div style={{ width: 36 }} aria-hidden="true" />
-              </div>
-
-              {/* Arc timer */}
-              <div className="flex justify-center">
-                <TimerDisplay
-                  remaining={remaining}
-                  phase={phase}
-                  isCompleted={status === "completed"}
-                  theme={theme}
-                />
-              </div>
-
-              {/* Phase label + icon */}
+        <motion.div
+          className="w-full flex flex-col"
+          style={{
+            ...glassPanelStyle,
+            maxWidth: "clamp(340px, 90vw, 520px)",
+            minHeight: "clamp(580px, 80vh, 720px)",
+          }}
+        >
+          <AnimatePresence mode="wait">
+            {view === "timer" ? (
               <motion.div
-                key={phase}
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="flex flex-col items-center"
+                key="timer"
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -12 }}
+                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                className="flex flex-col flex-1"
               >
-                <div
-                  className="flex items-center gap-2 px-4 py-2 rounded-full"
-                  style={{
-                    background: "rgba(255,255,255,0.15)",
-                    border: "1.5px solid rgba(255,255,255,0.25)",
-                    backdropFilter: "blur(4px)",
-                  }}
-                >
-                  <PhaseIcon phase={phase} color="rgba(255,255,255,0.9)" />
-                  <span
-                    className="text-sm font-bold"
-                    style={{
-                      color: "#ffffff",
-                      fontFamily: "var(--font-nunito)",
-                      letterSpacing: "0.02em",
-                    }}
-                  >
-                    {PHASE_LABEL[phase]}
-                  </span>
-                </div>
-              </motion.div>
-
-              {/* Mode selector */}
-              <ModeSelector phase={phase} status={status} onSelect={selectPhase} theme={theme} />
-
-              {/* Controls */}
-              <div className="flex justify-center mt-auto">
-                <TimerControls
-                  status={status}
-                  phase={phase}
-                  onStart={start}
-                  onPause={pause}
-                  onReset={reset}
-                  theme={theme}
+                <TimerPanel
+                  phase={phase} status={status} remaining={remaining}
+                  cyclesCompleted={cyclesCompleted} theme={theme}
+                  onShowStats={() => setView("stats")}
+                  start={start} pause={pause} reset={reset} addTime={addTime}
+                  selectPhase={selectPhase}
                 />
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="stats"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="flex flex-col flex-1 px-7 pt-7 pb-9 gap-5 relative"
-              style={{ zIndex: 10, color: theme.cardText }}
-            >
-              {/* Header */}
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setView("timer")}
-                  className="flex items-center justify-center w-9 h-9 rounded-full transition-all hover:opacity-80 active:scale-95"
-                  style={{
-                    background: "rgba(255,255,255,0.18)",
-                    border: "1.5px solid rgba(255,255,255,0.28)",
-                    cursor: "pointer",
-                  }}
-                  aria-label="Back to timer"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <polyline points="15 18 9 12 15 6" />
-                  </svg>
-                </button>
-                <span
-                  className="font-bold tracking-widest uppercase"
-                  style={{
-                    color: "#ffffff",
-                    fontFamily: "var(--font-nunito)",
-                    fontSize: "0.78rem",
-                    letterSpacing: "0.14em",
-                  }}
-                >
-                  Statistics
-                </span>
-              </div>
-
-              <StatsDashboard
-                todayCount={stats.todayCount}
-                totalMinutes={stats.totalMinutes}
-                currentStreak={stats.currentStreak}
-                bestStreak={stats.bestStreak}
-                last7Days={stats.last7Days}
-                accentColor={theme.accent}
-                onClear={clearSessions}
-                theme={theme}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="stats"
+                initial={{ opacity: 0, x: 12 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 12 }}
+                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                className="flex flex-col flex-1"
+              >
+                <StatsPanel
+                  theme={theme} stats={stats} clearSessions={clearSessions}
+                  onBack={() => setView("timer")}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </div>
     </motion.main>
   )
 }

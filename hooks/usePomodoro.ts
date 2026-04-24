@@ -119,6 +119,18 @@ export function usePomodoro() {
     setStatus("idle")
   }, [clearTick, phase])
 
+  const addTime = useCallback(
+    (seconds: number) => {
+      remainingAtPauseRef.current = remaining + seconds
+      setRemaining((prev) => prev + seconds)
+      // If running, re-anchor the start timestamp so the tick stays consistent
+      if (status === "running") {
+        startTimestampRef.current = Date.now()
+      }
+    },
+    [remaining, status]
+  )
+
   const selectPhase = useCallback(
     (p: Phase) => {
       clearTick()
@@ -139,6 +151,7 @@ export function usePomodoro() {
     start,
     pause,
     reset,
+    addTime,
     selectPhase,
     stats: statsRest,
     clearSessions: statsRest.clearSessions,
