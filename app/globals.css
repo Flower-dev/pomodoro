@@ -4,87 +4,117 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ── Design tokens — Nature / Soft Green ── */
+/* ── Design tokens — Memphis/Pop Playful ── */
 
 :root {
-  /* Page background — warm sage */
-  --page-bg:       #7aab8a;
-  --page-bg-break: #5c8a6e;
+  /* Phase card colors */
+  --coral:         hsl(12 70% 53%);
+  --coral-dark:    hsl(8  65% 42%);
+  --coral-mid:     hsl(20 80% 68%);
+  --coral-light:   hsl(350 55% 76%);
 
-  /* Focus card — white */
-  --card-bg:       #ffffff;
-  --card-text:     #2a4535;
-  --card-text-2:   #6a8a75;
-  --card-text-3:   rgba(42,69,53,0.3);
-  --card-track:    rgba(61,112,78,0.12);
-  --card-accent:   #3d704e;
-  --card-btn-bg:   #3d704e;
-  --card-btn-fg:   #ffffff;
-  --card-border:   rgba(61,112,78,0.1);
+  --forest:        hsl(152 52% 24%);
+  --forest-dark:   hsl(152 58% 16%);
+  --forest-mid:    hsl(162 48% 40%);
+  --forest-light:  hsl(152 32% 56%);
 
-  /* Break card — deep forest */
-  --break-card-bg:     #3d6b4a;
-  --break-card-text:   #ffffff;
-  --break-card-text-2: rgba(255,255,255,0.6);
-  --break-card-track:  rgba(255,255,255,0.18);
-  --break-card-accent: #ffffff;
-  --break-card-btn-bg: #ffffff;
-  --break-card-btn-fg: #3d6b4a;
+  --sky:           hsl(200 52% 54%);
+  --sky-dark:      hsl(200 55% 38%);
+  --sky-mid:       hsl(190 58% 70%);
+  --sky-light:     hsl(200 42% 78%);
+
+  /* Page backgrounds per phase */
+  --bg-focus:       hsl(350 65% 82%);
+  --bg-short-break: hsl(152 38% 72%);
+  --bg-long-break:  hsl(200 52% 78%);
+
+  /* Shared white-on-color tokens */
+  --on-color-text:    #ffffff;
+  --on-color-muted:   rgba(255 255 255 / 0.65);
+  --on-color-track:   rgba(255 255 255 / 0.18);
+  --on-color-border:  rgba(255 255 255 / 0.28);
+  --on-color-overlay: rgba(0   0   0   / 0.12);
+
+  /* Typography */
+  --font-display: var(--font-nunito), system-ui, sans-serif;
+  --font-mono:    var(--font-dm-mono), "Courier New", monospace;
+
+  --text-xs:     clamp(0.68rem, 1vw,   0.78rem);
+  --text-sm:     clamp(0.78rem, 1.2vw, 0.88rem);
+  --text-base:   clamp(0.9rem,  1.5vw, 1rem);
+  --text-lg:     clamp(1.1rem,  2vw,   1.3rem);
+  --text-timer:  clamp(3.4rem,  13vw,  4.4rem);
+
+  /* Radius */
+  --radius-sm:  8px;
+  --radius-md:  14px;
+  --radius-lg:  20px;
+  --radius-xl:  28px;
+  --radius-2xl: 40px;
 
   /* Shadcn compat */
-  --background: var(--card-bg);
-  --foreground: var(--card-text);
-  --card: var(--card-bg);
-  --card-foreground: var(--card-text);
-  --popover: var(--card-bg);
-  --popover-foreground: var(--card-text);
-  --primary: var(--card-accent);
-  --primary-foreground: #fff;
-  --secondary: rgba(61,112,78,0.08);
-  --secondary-foreground: var(--card-text);
-  --muted: rgba(61,112,78,0.06);
-  --muted-foreground: var(--card-text-2);
-  --accent: rgba(61,112,78,0.08);
-  --accent-foreground: var(--card-text);
-  --destructive: #e05c5c;
-  --border: var(--card-border);
-  --input: rgba(61,112,78,0.08);
-  --ring: var(--card-accent);
-  --radius: 1.5rem;
+  --background:           var(--bg-focus);
+  --foreground:           #ffffff;
+  --card:                 var(--coral);
+  --card-foreground:      #ffffff;
+  --popover:              #ffffff;
+  --popover-foreground:   #1a2010;
+  --primary:              var(--coral);
+  --primary-foreground:   #ffffff;
+  --secondary:            var(--coral-mid);
+  --secondary-foreground: #ffffff;
+  --muted:                rgba(255 255 255 / 0.18);
+  --muted-foreground:     rgba(255 255 255 / 0.65);
+  --accent:               rgba(255 255 255 / 0.18);
+  --accent-foreground:    #ffffff;
+  --destructive:          hsl(0 70% 55%);
+  --border:               rgba(255 255 255 / 0.3);
+  --input:                rgba(255 255 255 / 0.18);
+  --ring:                 #ffffff;
+  --radius:               1rem;
 }
 
 /* ── Base ── */
 @layer base {
   * { box-sizing: border-box; }
+
   html {
-    font-family: var(--font-nunito), system-ui, sans-serif;
+    font-family: var(--font-display);
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+
   body {
-    background: var(--page-bg);
-    color: var(--card-text);
+    background: var(--bg-focus);
+    color: #ffffff;
     min-height: 100dvh;
   }
+
   ::selection {
-    background: rgba(61,112,78,0.2);
-    color: var(--card-text);
+    background: rgba(255 255 255 / 0.3);
+    color: #ffffff;
   }
 }
 
 /* ── Keyframes ── */
 @keyframes fade-up {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scale-in {
-  from { opacity: 0; transform: scale(0.92); }
+  from { opacity: 0; transform: scale(0.94); }
   to   { opacity: 1; transform: scale(1); }
 }
 
-@keyframes pulse-ring {
-  0%, 100% { transform: scale(1); opacity: 0.6; }
-  50%       { transform: scale(1.08); opacity: 0; }
+@keyframes blob-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes blob-float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%       { transform: translateY(-5px) rotate(3deg); }
 }
 
 /* ── Utilities ── */
@@ -99,4 +129,19 @@
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(61,112,78,0.2); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: rgba(255 255 255 / 0.3); border-radius: 2px; }
+
+/* ── Focus visible ── */
+:focus-visible {
+  outline: 2px solid rgba(255 255 255 / 0.8);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
