@@ -126,6 +126,13 @@
   animation: scale-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* ── Blob animation classes ─────────────────────────────────────────────────
+   Defined as plain classes (not @utility) so the CSS optimizer keeps the
+   @keyframes alive in production — inline style={{ animation }} alone is
+   not seen by the static analyser and causes the keyframes to be purged.   */
+.blob-float      { animation: blob-float      11s ease-in-out infinite; }
+.blob-float-slow { animation: blob-float-slow 14s ease-in-out infinite; }
+
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }

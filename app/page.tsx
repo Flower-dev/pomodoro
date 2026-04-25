@@ -90,83 +90,106 @@ function FullScreenDecorations({ theme }: { theme: BlobTheme }) {
         <rect x="1180" y="-120" width="160" height="380" rx="80"
           fill={theme.blobDark}
           transform="rotate(25 1260 70)"
-          style={{ animation: "blob-float-slow 16s ease-in-out infinite" }}
+          className="blob-float-slow"
+          style={{ animationDuration: "16s" }}
         />
         <rect x="-80" y="640" width="150" height="340" rx="75"
           fill={theme.blobMid}
           transform="rotate(-20 -5 810)"
-          style={{ animation: "blob-float 13s ease-in-out infinite 1.5s" }}
+          className="blob-float"
+          style={{ animationDuration: "13s", animationDelay: "1.5s" }}
         />
         <rect x="60" y="200" width="110" height="260" rx="55"
           fill={theme.blobDark}
           transform="rotate(12 115 330)"
           opacity="0.7"
-          style={{ animation: "blob-float-slow 18s ease-in-out infinite 3s" }}
+          className="blob-float-slow"
+          style={{ animationDuration: "18s", animationDelay: "3s" }}
         />
         <rect x="1260" y="400" width="100" height="230" rx="50"
           fill={theme.blobMid}
           transform="rotate(-15 1310 515)"
           opacity="0.75"
-          style={{ animation: "blob-float 12s ease-in-out infinite 2s" }}
+          className="blob-float"
+          style={{ animationDuration: "12s", animationDelay: "2s" }}
         />
         <rect x="600" y="780" width="120" height="200" rx="60"
           fill={theme.blobLight}
           transform="rotate(8 660 880)"
           opacity="0.6"
-          style={{ animation: "blob-float 10s ease-in-out infinite 0.8s" }}
+          className="blob-float"
+          style={{ animationDuration: "10s", animationDelay: "0.8s" }}
         />
         {/* Small pill — top center */}
         <rect x="640" y="-30" width="80" height="180" rx="40"
           fill={theme.blobMid}
           transform="rotate(-8 680 60)"
           opacity="0.5"
-          style={{ animation: "blob-float-slow 15s ease-in-out infinite 4s" }}
+          className="blob-float-slow"
+          style={{ animationDuration: "15s", animationDelay: "4s" }}
         />
 
-        {/* ── 4-petal flowers ── */}
+        {/* ── 4-petal flowers — static, no animation ── */}
         {/* Bottom-right flower — large */}
-        <g transform="translate(1340, 820)" style={{ animation: "blob-float 10s ease-in-out infinite 0.5s" }}>
+        <g transform="translate(1340, 820)">
           <circle cx="0"   cy="-42" r="36" fill={theme.blobLight} />
           <circle cx="42"  cy="0"   r="36" fill={theme.blobLight} />
           <circle cx="0"   cy="42"  r="36" fill={theme.blobLight} />
           <circle cx="-42" cy="0"   r="36" fill={theme.blobLight} />
         </g>
         {/* Top-left flower — medium */}
-        <g transform="translate(120, 100)" opacity="0.75" style={{ animation: "blob-float 8s ease-in-out infinite 2.5s" }}>
+        <g transform="translate(120, 100)" opacity="0.75">
           <circle cx="0"   cy="-28" r="24" fill={theme.blobMid} />
           <circle cx="28"  cy="0"   r="24" fill={theme.blobMid} />
           <circle cx="0"   cy="28"  r="24" fill={theme.blobMid} />
           <circle cx="-28" cy="0"   r="24" fill={theme.blobMid} />
         </g>
         {/* Mid-bottom flower */}
-        <g transform="translate(400, 820)" opacity="0.5" style={{ animation: "blob-float 11s ease-in-out infinite 1s" }}>
+        <g transform="translate(400, 820)" opacity="0.5">
           <circle cx="0"   cy="-20" r="17" fill={theme.blobDark} />
           <circle cx="20"  cy="0"   r="17" fill={theme.blobDark} />
           <circle cx="0"   cy="20"  r="17" fill={theme.blobDark} />
           <circle cx="-20" cy="0"   r="17" fill={theme.blobDark} />
         </g>
         {/* Right-mid small flower */}
-        <g transform="translate(1380, 360)" opacity="0.45" style={{ animation: "blob-float 9s ease-in-out infinite 4s" }}>
+        <g transform="translate(1380, 360)" opacity="0.45">
           <circle cx="0"   cy="-16" r="13" fill={theme.blobLight} />
           <circle cx="16"  cy="0"   r="13" fill={theme.blobLight} />
           <circle cx="0"   cy="16"  r="13" fill={theme.blobLight} />
           <circle cx="-16" cy="0"   r="13" fill={theme.blobLight} />
         </g>
         {/* Top-center small flower */}
-        <g transform="translate(720, 60)" opacity="0.5" style={{ animation: "blob-float 7s ease-in-out infinite 1.2s" }}>
+        <g transform="translate(720, 60)" opacity="0.5">
           <circle cx="0"   cy="-14" r="12" fill={theme.blobLight} />
           <circle cx="14"  cy="0"   r="12" fill={theme.blobLight} />
           <circle cx="0"   cy="14"  r="12" fill={theme.blobLight} />
           <circle cx="-14" cy="0"   r="12" fill={theme.blobLight} />
         </g>
+        {/* Bottom-left flower — medium */}
+        <g transform="translate(160, 780)" opacity="0.55">
+          <circle cx="0"   cy="-22" r="19" fill={theme.blobMid} />
+          <circle cx="22"  cy="0"   r="19" fill={theme.blobMid} />
+          <circle cx="0"   cy="22"  r="19" fill={theme.blobMid} />
+          <circle cx="-22" cy="0"   r="19" fill={theme.blobMid} />
+        </g>
+        {/* Top-right small flower */}
+        <g transform="translate(1300, 120)" opacity="0.4">
+          <circle cx="0"   cy="-15" r="13" fill={theme.blobMid} />
+          <circle cx="15"  cy="0"   r="13" fill={theme.blobMid} />
+          <circle cx="0"   cy="15"  r="13" fill={theme.blobMid} />
+          <circle cx="-15" cy="0"   r="13" fill={theme.blobMid} />
+        </g>
 
         {/* ── Accent circles ── */}
-        <circle cx="200" cy="820" r="22" fill={theme.blobDark}  opacity="0.5"
-          style={{ animation: "blob-float 9s ease-in-out infinite 3.5s" }} />
+        <circle cx="200" cy="820" r="22" fill={theme.blobDark} opacity="0.5"
+          className="blob-float"
+          style={{ animationDuration: "9s", animationDelay: "3.5s" }} />
         <circle cx="1200" cy="160" r="18" fill={theme.blobMid} opacity="0.55"
-          style={{ animation: "blob-float-slow 14s ease-in-out infinite 0.7s" }} />
+          className="blob-float-slow"
+          style={{ animationDuration: "14s", animationDelay: "0.7s" }} />
         <circle cx="900" cy="780" r="16" fill={theme.blobDark} opacity="0.4"
-          style={{ animation: "blob-float 8s ease-in-out infinite 2.2s" }} />
+          className="blob-float"
+          style={{ animationDuration: "8s", animationDelay: "2.2s" }} />
       </svg>
     </div>
   )
